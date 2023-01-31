@@ -9,9 +9,12 @@ import { NFT__DATA } from "../assets/data/data";
 import { Container, Row, Col } from "reactstrap";
 
 import "../styles/market.css";
+import { useCollection } from "../hooks/useCollection";
 
 const Market = () => {
-  const [data, setData] = useState(NFT__DATA);
+  const { documents, error } = useCollection("nfts");
+  console.log(documents);
+  const [data, setData] = useState(documents);
 
   const handleCategory = () => {};
 
@@ -21,29 +24,35 @@ const Market = () => {
   const handleSort = (e) => {
     const filterValue = e.target.value;
 
+    if (filterValue === "all") {
+      const filterData = documents.filter((item) => item.price >= 0);
+
+      setData(filterData);
+    }
+
     if (filterValue === "high") {
-      const filterData = NFT__DATA.filter((item) => item.currentBid >= 6);
+      const filterData = documents.filter((item) => item.price >= 0.009);
 
       setData(filterData);
     }
 
     if (filterValue === "mid") {
-      const filterData = NFT__DATA.filter(
-        (item) => item.currentBid >= 5.5 && item.currentBid < 6
+      const filterData = documents.filter(
+        (item) => item.price >= 0.002 && item.price < 0.004
       );
 
       setData(filterData);
     }
 
     if (filterValue === "low") {
-      const filterData = NFT__DATA.filter(
-        (item) => item.currentBid >= 4.89 && item.currentBid < 5.5
+      const filterData = documents.filter(
+        (item) => item.price >= 0.001 && item.price < 0.003
       );
 
       setData(filterData);
     }
   };
-
+  
   return (
     <>
       <CommonSection title={"MarketPlace"} />
@@ -77,6 +86,7 @@ const Market = () => {
                 <div className="filter__right">
                   <select onChange={handleSort}>
                     <option>Sort By</option>
+                    <option value="all">All</option>
                     <option value="high">High Rate</option>
                     <option value="mid">Mid Rate</option>
                     <option value="low">Low Rate</option>
@@ -84,12 +94,13 @@ const Market = () => {
                 </div>
               </div>
             </Col>
-
+            {error && <p className="error">{error}</p>}
+            {!error && !documents && <h1>Loading...</h1>}
             {data?.map((item) => (
-              <Col lg="3" md="4" sm="6" className="mb-4" key={item.id}>
-                <NftCard item={item} />
-              </Col>
-            ))}
+            <Col lg="3" md="4" sm="6" key={item.id} className="mb-4">
+              <NftCard item={item} />
+            </Col>
+          ))}
           </Row>
         </Container>
       </section>

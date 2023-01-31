@@ -43,7 +43,7 @@ console.log(imgError);
       setImgError("Selected file must be an image");
       return;
     }
-    if (selected.size > 1000000) {
+    if (selected.size > 100000000) {
       setImgError("Image file size must be less than 1MB");
       return;
     }
